@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="theme-color" content="#203d33" />
+		<title>MÖLKKY NOTE | モルックを、もう一度。</title>
+		<link rel="stylesheet" href="style.css?v=20261020-5" />
+	</head>
+	<body>
+		<header class="site-header">
+			<a class="brand" href="#home" aria-label="タイトルへ"><span class="brand-mark">Ⅲ</span> MÖLKKY <b>NOTE</b></a
+			><span class="header-note">モルック研究会 <span class="dot"></span> MATCH REVIEW</span>
+		</header>
+		<main>
+			<section id="home" class="page home">
+				<div class="intro">
+					<p class="eyebrow">PLAY. WATCH. DISCOVER.</p>
+					<h1>一投の先に、<br />発見がある。</h1>
+					<p class="lead">モルックの時間を、もっと豊かに。<br />映像と記録をつないで、一投一投を振り返ろう。</p>
+					<div class="home-actions">
+						<a href="#load" class="button primary">モルックデータを鑑賞する <span>↗</span></a
+						><a href="#play" class="button secondary">モルックをプレイする <span>→</span></a>
+					</div>
+					<p class="local-note"><span class="dot"></span> ローカルファイルは外部にアップロードされません</p>
+				</div>
+				<div class="hero-art" aria-label="モルックのスキットルのイラスト">
+					<span class="art-label">THE NEXT THROW, A NEW PERSPECTIVE.</span
+					><svg viewBox="0 0 500 440" aria-hidden="true">
+						<ellipse cx="250" cy="350" rx="200" ry="58" fill="#d5dac6" />
+						<g stroke="#203d33" stroke-width="3" fill="#f1e3c7">
+							<path d="M185 247v-113q25-34 50 0v113q-25 18-50 0" />
+							<ellipse cx="210" cy="134" rx="25" ry="16" />
+							<path d="M252 223V92q25-34 50 0v131q-25 18-50 0" />
+							<ellipse cx="277" cy="92" rx="25" ry="16" />
+							<path d="M320 264V151q25-34 50 0v113q-25 18-50 0" />
+							<ellipse cx="345" cy="151" rx="25" ry="16" />
+							<path d="M224 315V189q27-36 54 0v126q-27 18-54 0" />
+							<ellipse cx="251" cy="189" rx="27" ry="17" />
+							<path d="M134 300V184q26-34 52 0v116q-26 18-52 0" />
+							<ellipse cx="160" cy="184" rx="26" ry="17" />
+							<path d="m275 333 108-38q29-8 36 15l3 10q3 17-18 26l-106 37q-23 4-27-18l-2-13q-3-12 6-19" />
+						</g>
+						<g font-family="Georgia,serif" font-size="32" fill="#203d33" text-anchor="middle">
+							<text x="210" y="203">7</text>
+							<text x="277" y="169">9</text>
+							<text x="345" y="220">8</text>
+							<text x="251" y="269">12</text>
+							<text x="160" y="260">5</text>
+						</g>
+						<path
+							d="M83 116q40-48 100-48M377 99l12-18m-6 35 23-6"
+							fill="none"
+							stroke="#8a9a78"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-dasharray="4 6"
+						/></svg
+					><span class="art-caption">12 SKITTLES. ENDLESS POSSIBILITIES.</span>
+				</div>
+				<div class="home-footer"><span>01 / 映像を見る</span><span>02 / 記録をたどる</span><span>03 / 一投を読み解く</span></div>
+			</section>
+			<section id="play" class="page narrow" hidden>
+				<a href="#home" class="back">← タイトルへ</a>
+				<p class="eyebrow">COMING SOON</p>
+				<h1>次の一投を、準備中。</h1>
+				<p class="lead">プレイ機能は工事中です。<br />先に、試合の振り返りを楽しみましょう。</p>
+				<a href="#load" class="button primary">データを鑑賞する →</a>
+			</section>
+			<section id="load" class="page load-page" hidden>
+				<a href="#home" class="back">← タイトルへ</a>
+				<div class="page-title">
+					<div>
+						<p class="eyebrow">MATCH REVIEW / IMPORT</p>
+						<h1>振り返りを、はじめよう。</h1>
+						<p>動画とゲームログを読み込んでください。ファイルとURLは組み合わせて使えます。</p>
+					</div>
+					<div class="sample-actions">
+						<!-- <button id="real-sample" class="button primary">9月28日の試合を開く ↗</button
+						> -->
+            <button id="demo" class="button secondary">操作サンプルを体験する ↗</button>
+					</div>
+				</div>
+				<form id="load-form">
+					<div class="import-grid">
+						<article class="import-card">
+							<div class="card-top"><span class="step">01</span><span class="tag">必須</span></div>
+							<h2>動画</h2>
+							<p>振り返りたい試合の映像</p>
+							<label class="dropzone" id="drop-video"
+								><span class="upload-icon">↥</span><strong>ドラッグ＆ドロップ</strong><span>またはクリックしてファイルを選択</span
+								><input type="file" id="file-video" accept="video/*" /><span class="file-name" id="name-video">MP4 / WebM など</span></label
+							>
+							<div class="or">または URL</div>
+							<label class="sr-only" for="url-video">動画のURL</label
+							><input class="url-input" type="url" id="url-video" placeholder="https://…" />
+							<p class="input-hint">動画ファイルの直接URL</p>
+						</article>
+						<article class="import-card">
+							<div class="card-top"><span class="step">02</span><span class="tag">必須</span></div>
+							<h2>ゲームログ</h2>
+							<p>試技・時刻・得点の記録</p>
+							<label class="dropzone" id="drop-log"
+								><span class="upload-icon">↥</span><strong>ドラッグ＆ドロップ</strong><span>またはクリックしてファイルを選択</span
+								><input type="file" id="file-log" accept=".csv,text/csv" /><span class="file-name" id="name-log">CSVファイル</span></label
+							>
+							<div class="or">または URL</div>
+							<label class="sr-only" for="url-log">ゲームログのURL</label
+							><input class="url-input" type="url" id="url-log" placeholder="https://docs.google.com/spreadsheets/…" />
+							<p class="input-hint">公開されたスプレッドシート、またはCSVの直接URL</p>
+						</article>
+						<article class="import-card">
+							<div class="card-top"><span class="step">03</span><span class="tag">オプション</span></div>
+							<h2>スキットル位置</h2>
+							<p>試技ごとの配置の変化</p>
+							<label class="dropzone" id="drop-positions"
+								><span class="upload-icon">↥</span><strong>ドラッグ＆ドロップ</strong><span>またはクリックしてファイルを選択</span
+								><input type="file" id="file-positions" accept=".csv,text/csv" /><span class="file-name" id="name-positions"
+									>CSVファイル</span
+								></label
+							>
+							<div class="or">または URL</div>
+							<label class="sr-only" for="url-positions">スキットル位置のURL</label
+							><input class="url-input" type="url" id="url-positions" placeholder="https://…" />
+							<p class="input-hint">CSVの直接URL。省略すると初期配置を表示</p>
+						</article>
+					</div>
+					<div class="import-bottom">
+						<p>ⓘ クラウドのデータは、公開設定や配信元のアクセス許可が必要です。</p>
+						<button class="button primary" type="submit" id="load-submit">鑑賞をはじめる <span>→</span></button>
+					</div>
+					<p id="load-error" class="error" role="alert"></p>
+				</form>
+				<details class="format-guide">
+					<summary>CSVの形式とサンプル</summary>
+					<p>
+						実データ形式: timestamp（YYYY/MM/DD HH:mm:ss・日本時間）, turn, team, player, pins, throw_score, score_before, score_after
+						など。noteは任意で追加できます。従来のthrow / score / total形式も使えます。時刻は重複なしの昇順。
+					</p>
+					<p>位置情報: throw, pin, x, y。試技後の位置を指定します。省略された番号は直前の位置を引き継ぎます。xは右、yは下が正です。</p>
+					<a href="samples/20260928_1.csv" download>9月28日のゲームログ ↓</a>　<a href="samples/game.csv" download>ゲームログのサンプル ↓</a>　<a
+						href="samples/positions.csv"
+						download
+						>位置情報のサンプル ↓</a
+					>
+				</details>
+			</section>
+			<section id="review" class="page review-page" hidden>
+				<div class="review-heading">
+					<div>
+						<p class="eyebrow">MATCH REVIEW / WORKSPACE</p>
+						<h1 id="match-title">一投ずつ、読み解く。</h1>
+					</div>
+					<a href="#load" class="button secondary">別のデータを読み込む ↗</a>
+				</div>
+				<p id="review-error" class="error" role="alert"></p>
+				<div class="layout-tools">
+					<span>エリアの縁・右下をドラッグしてサイズ変更</span><button id="reset-layout" class="text-button">サイズをリセット</button>
+				</div>
+				<div class="workspace">
+					<div class="media-panels">
+						<section class="panel video-panel resizable-panel">
+							<div class="panel-heading">
+								<h2><span class="panel-number">01</span> 動画</h2>
+								<span id="video-name" class="muted"></span>
+							</div>
+							<div class="video-stage">
+								<video id="video" controls playsinline preload="metadata"></video
+								><span id="demo-badge" hidden>DEMO / 動作確認用のサンプル映像</span>
+							</div>
+							<div class="video-time"><output id="video-clock" aria-label="動画の現在時刻">00:00.0</output></div>
+							<p class="keyboard-hint">Space 再生 / 一時停止 <span>← → コマ戻し / コマ送り</span></p>
+						</section>
+						<section class="panel field-panel resizable-panel">
+							<div class="panel-heading">
+								<h2><span class="panel-number">02</span> スキットル配置</h2>
+								<span id="position-mode" class="tag">初期配置</span>
+							</div>
+							<div class="field-wrap">
+								<svg id="field" viewBox="0 0 440 340" role="img" aria-label="現在の試技のスキットル配置">
+									<defs>
+										<pattern id="grid" width="22" height="22" patternUnits="userSpaceOnUse">
+											<circle cx="1" cy="1" r="1" fill="#d8ded3" />
+										</pattern>
+									</defs>
+									<rect width="440" height="340" fill="url(#grid)" />
+									<g id="field-content"></g>
+								</svg>
+								<div class="zoom-controls">
+									<button id="zoom-out" aria-label="縮小">−</button><output id="zoom-value">100%</output
+									><button id="zoom-in" aria-label="拡大">＋</button><button id="reset-view">リセット</button>
+								</div>
+							</div>
+							<div class="field-legend"><span>◯ 立っている</span><span>◌ 移動前</span><span>● 倒れた位置</span></div>
+							<p class="keyboard-hint">ホイール / ピンチでカーソル位置を中心にズーム</p>
+						</section>
+					</div>
+					<section class="panel log-panel">
+						<div class="panel-heading log-heading">
+							<h2><span class="panel-number">03</span> ゲームログ <span id="log-count" class="tag"></span></h2>
+							<div class="sync-heading-controls">
+								<label class="sync-switch">
+									<input id="sync-mode" type="checkbox" role="switch" aria-describedby="sync-help" />
+									<span class="switch-track" aria-hidden="true"></span>
+									<span>同期調整モード</span>
+								</label>
+								<small id="sync-help">動画とログの位置を調整できます</small>
+							</div>
+							<label class="follow"><input type="checkbox" id="auto-follow" checked /> 現在の試技を追従</label>
+						</div>
+						<div id="sync-details" class="sync-details" hidden>
+							<output id="sync-target" aria-live="polite">同期対象なし</output>
+							<button id="sync" class="button small">同期</button>
+							<button id="reset-sync" class="text-button">同期を解除</button>
+							<output id="sync-status">未調整</output>
+						</div>
+						<aside id="sync-guide" class="sync-guide" hidden aria-label="同期のコツ">
+							<strong>同期のコツ</strong>
+							<ol>
+								<li>ログ表で、<b>試技n</b>をクリックしてハイライト状態に</li>
+								<li>動画で、<b>試技n</b>のログが登録されたであろうタイミングで一時停止</li>
+								<li>この状態で同期ボタンを押す！</li>
+							</ol>
+						</aside>
+						<p id="selection-status" class="selection-status" hidden aria-live="polite">動画の再生位置に合わせて試技を表示します</p>
+						<div class="table-scroll">
+							<table>
+								<thead>
+									<tr>
+										<th>試技</th>
+										<th>終了時刻</th>
+										<th>チーム</th>
+										<th>プレイヤー</th>
+										<th>倒れたスキットル</th>
+										<th>得点</th>
+										<th>累計（前 → 後）</th>
+										<th>状態</th>
+										<th>メモ</th>
+									</tr>
+								</thead>
+								<tbody id="log-body"></tbody>
+							</table>
+						</div>
+					</section>
+				</div>
+			</section>
+		</main>
+		<footer class="site-footer"><span>MÖLKKY NOTE</span><span>一投を記録する。一投から学ぶ。</span></footer>
+		<script type="module" src="app.js?v=20261020-5"></script>
+	</body>
+</html>
