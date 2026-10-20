@@ -21,9 +21,8 @@ class Element {
   pause(){}
   load(){}
 }
-function setup(optionalButtons){
+function setup(){
   const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,new Element(id)]));
-  for(const id of optionalButtons)nodes.set(id,new Element(id));
   const video=nodes.get('video');video.currentTime=0;video.duration=100;video.readyState=1;
   const location={value:'#load',get hash(){return this.value;},set hash(value){this.value=value.startsWith('#')?value:'#'+value;}};const pages=['home','play','load','review'].map(id=>nodes.get(id));
   let fetches=0,objectURLs=0;
@@ -33,33 +32,29 @@ function setup(optionalButtons){
     window:{addEventListener(){},scrollTo(){}},
     ResizeObserver:class{observe(){}},requestAnimationFrame(){},
     URL:{createObjectURL(){objectURLs++;return 'blob:local-video';},revokeObjectURL(){}},
-    fetch(){fetches++;throw new Error('Local input must not fetch sample assets');},
+    fetch(){fetches++;throw new Error('Local input must not access the network');},
   });
   vm.runInContext(source,context);
   const drop=(kind,file)=>nodes.get(`drop-${kind}`).emit('drop',{dataTransfer:{files:[file]}});
   return {nodes,context,drop,location,counts:()=>({fetches,objectURLs})};
 }
-for(const buttons of [[],['demo'],['real-sample'],['demo','real-sample']]){
-  test(`local video/CSV load succeeds with optional sample buttons: ${buttons.join(',')||'none'}`,async()=>{
-    const app=setup(buttons);
-    app.drop('video',{name:'match.mp4'});
-    app.drop('log',{name:'match.csv',text:async()=> 'timestamp,turn,player,pins\n2026/09/28 15:18:07,1,A,7\n2026/09/28 15:19:30,2,B,1;2'});
-    const pending=app.nodes.get('load-form').emit('submit');
-    assert.equal(app.nodes.get('load-submit').disabled,true);
-    for(const id of buttons)assert.equal(app.nodes.get(id).disabled,true);
-    await pending;
-    assert.equal(app.nodes.get('load-error').textContent,'');
-    assert.equal(app.location.hash,'#review');
-    assert.equal(app.nodes.get('review').hidden,false);
-    assert.equal(app.nodes.get('video').src,'blob:local-video');
-    assert.equal(app.nodes.get('log-body').children.length,2);
-    assert.equal(app.nodes.get('load-submit').disabled,false);
-    for(const id of buttons)assert.equal(app.nodes.get(id).disabled,false);
-    assert.deepEqual(app.counts(),{fetches:0,objectURLs:1});
-  });
-}
-test('invalid CSV clears loading state and allows retry without sample buttons',async()=>{
-  const app=setup([]);app.drop('video',{name:'match.mp4'});
+test('local drag/drop and submit initialize review without any bundled data or network access',async()=>{
+  const app=setup();
+  app.drop('video',{name:'match.mp4'});
+  app.drop('log',{name:'match.csv',text:async()=> 'timestamp,turn,player,pins\n2026/09/28 15:18:07,1,A,7\n2026/09/28 15:19:30,2,B,1;2'});
+  const pending=app.nodes.get('load-form').emit('submit');
+  assert.equal(app.nodes.get('load-submit').disabled,true);
+  await pending;
+  assert.equal(app.nodes.get('load-error').textContent,'');
+  assert.equal(app.location.hash,'#review');
+  assert.equal(app.nodes.get('review').hidden,false);
+  assert.equal(app.nodes.get('video').src,'blob:local-video');
+  assert.equal(app.nodes.get('log-body').children.length,2);
+  assert.equal(app.nodes.get('load-submit').disabled,false);
+  assert.deepEqual(app.counts(),{fetches:0,objectURLs:1});
+});
+test('invalid CSV clears loading state and allows retry',async()=>{
+  const app=setup();app.drop('video',{name:'match.mp4'});
   app.drop('log',{name:'broken.csv',text:async()=> 'timestamp\nbad'});
   await app.nodes.get('load-form').emit('submit');
   assert.notEqual(app.nodes.get('load-error').textContent,'');

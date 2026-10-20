@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<meta name="theme-color" content="#203d33" />
 		<title>MÖLKKY NOTE | モルックを、もう一度。</title>
-		<link rel="stylesheet" href="style.css?v=20261020-6" />
+		<link rel="stylesheet" href="style.css?v=20261020-7" />
 	</head>
 	<body>
 		<header class="site-header">
@@ -128,13 +128,13 @@
 					<p id="load-error" class="error" role="alert"></p>
 				</form>
 				<details class="format-guide">
-					<summary>CSVの形式とサンプル</summary>
+					<summary>CSVの形式</summary>
 					<p>
 						実データ形式: timestamp（YYYY/MM/DD HH:mm:ss・日本時間）, turn, team, player, pins, throw_score, score_before, score_after
 						など。noteは任意で追加できます。従来のthrow / score / total形式も使えます。時刻は重複なしの昇順。
 					</p>
 					<p>位置情報: throw, pin, x, y。試技後の位置を指定します。省略された番号は直前の位置を引き継ぎます。xは右、yは下が正です。</p>
-</details>
+				</details>
 			</section>
 			<section id="review" class="page review-page" hidden>
 				<div class="review-heading">
@@ -156,8 +156,7 @@
 								<span id="video-name" class="muted"></span>
 							</div>
 							<div class="video-stage">
-								<video id="video" controls playsinline preload="metadata"></video
-								><span id="demo-badge" hidden>DEMO / 動作確認用のサンプル映像</span>
+								<video id="video" controls playsinline preload="metadata"></video>
 							</div>
 							<div class="video-time"><output id="video-clock" aria-label="動画の現在時刻">00:00.0</output></div>
 							<p class="keyboard-hint">Space 再生 / 一時停止 <span>← → コマ戻し / コマ送り</span></p>
@@ -237,6 +236,6 @@
 			</section>
 		</main>
 		<footer class="site-footer"><span>MÖLKKY NOTE</span><span>一投を記録する。一投から学ぶ。</span></footer>
-		<script type="module" src="app.js?v=20261020-6"></script>
+		<script type="module" src="app.js?v=20261020-7"></script>
 	</body>
 </html>

@@ -1,4 +1,4 @@
-import {activeIndex,syncHighlighted} from './data.js?v=20261020-6';
+import {activeIndex,syncHighlighted} from './data.js?v=20261020-7';
 
 export function beginSync(state) {
   state.syncMode=true;

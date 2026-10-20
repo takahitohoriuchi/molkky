@@ -1,6 +1,6 @@
-import {followLogRow} from './log-scroll.js?v=20261020-6';
-import {beginSync,playbackIndex,selectRow,finishSync} from './review-state.js?v=20261020-6';
-import {parseLog,parsePositions,positionFrames,cloudURL,clock,initialPositions} from './data.js?v=20261020-6';
+import {followLogRow} from './log-scroll.js?v=20261020-7';
+import {beginSync,playbackIndex,selectRow,finishSync} from './review-state.js?v=20261020-7';
+import {parseLog,parsePositions,positionFrames,cloudURL,clock,initialPositions} from './data.js?v=20261020-7';
 const $=id=>document.getElementById(id);
 const state={files:{},logs:[],frames:[],index:-2,offset:0,baseOffset:0,urls:[],scale:1,tx:220,ty:200,hasPositions:false,loading:false,syncMode:false};
 const video=$('video');
@@ -19,7 +19,7 @@ async function fetchText(url){const controller=new AbortController();const timer
 async function sourceText(key){if(state.files[key])return state.files[key].text();const value=$(`url-${key}`).value.trim();return value?fetchText(cloudURL(value,key)):null;}
 function busy(value){
   state.loading=value;
-  for(const id of ['load-submit','demo','real-sample']){const button=$(id);if(button)button.disabled=value;}
+  $('load-submit').disabled=value;
   $('load-submit').textContent=value?'読み込み中…':'鑑賞をはじめる →';
 }
 $('load-form').addEventListener('submit',async e=>{e.preventDefault();if(state.loading)return;busy(true);$('load-error').textContent='';try{
@@ -27,18 +27,12 @@ $('load-form').addEventListener('submit',async e=>{e.preventDefault();if(state.l
   const texts=await Promise.all([sourceText('log'),sourceText('positions')]);if(!texts[0])throw new Error('ゲームログのCSVまたはURLを指定してください。');
   const logs=parseLog(texts[0]),positions=texts[1]?parsePositions(texts[1],logs):new Map();
   const src=state.files.video?URL.createObjectURL(state.files.video):cloudURL($('url-video').value.trim(),'video');
-  openReview(logs,positions,src,state.files.video?.name||'クラウドの動画',false,!!texts[1]);
+  openReview(logs,positions,src,state.files.video?.name||'クラウドの動画',!!texts[1]);
 }catch(e){$('load-error').textContent=e.message;}finally{busy(false);}});
-$('demo')?.addEventListener('click',async()=>{if(state.loading)return;busy(true);$('load-error').textContent='';try{const [a,b]=await Promise.all([fetchText('samples/game.csv'),fetchText('samples/positions.csv')]);const logs=parseLog(a);openReview(logs,parsePositions(b,logs),'samples/demo.mp4','サンプル映像 / 30秒',true,true);}catch(e){$('load-error').textContent=e.message;}finally{busy(false);}});
-$('real-sample')?.addEventListener('click',async()=>{
-  if(state.loading)return;busy(true);$('load-error').textContent='';
-  try{const logs=parseLog(await fetchText('samples/20260928_1.csv'));openReview(logs,new Map(),'samples/G1_ALL.mp4','G1_ALL.mp4 / 2026年9月28日',false,false);}
-  catch(e){$('load-error').textContent=e.message;}finally{busy(false);}
-});
-function openReview(logs,positions,src,name,demo,hasPositions){
+function openReview(logs,positions,src,name,hasPositions){
   video.pause();video.removeAttribute('src');video.load();state.urls.forEach(u=>URL.revokeObjectURL(u));state.urls=src.startsWith('blob:')?[src]:[];
   Object.assign(state,{logs,frames:positionFrames(logs,positions),index:-2,offset:-logs[0].time,baseOffset:-logs[0].time,syncMode:false,hasPositions});
-  $('review-error').textContent='';$('video-name').textContent=name;$('demo-badge').hidden=!demo;$('position-mode').textContent=hasPositions?'位置データあり':'初期配置';$('log-count').textContent=`${logs.length} 投`;$('sync-status').textContent='未調整（最初の試技の終了＝動画0秒）';
+  $('review-error').textContent='';$('video-name').textContent=name;$('position-mode').textContent=hasPositions?'位置データあり':'初期配置';$('log-count').textContent=`${logs.length} 投`;$('sync-status').textContent='未調整（最初の試技の終了＝動画0秒）';
   $('match-title').textContent=logs[0].game ? `${logs[0].game}${logs[0].goalScore ? ` · ${logs[0].goalScore}点ゲーム` : ''}` : '一投ずつ、読み解く。';
   buildTable();resetView();video.muted=false;video.defaultMuted=false;video.volume=1;renderSyncMode();video.src=src;video.load();location.hash='review';route();update(true);
 }
