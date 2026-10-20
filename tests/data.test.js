@@ -1,9 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import {parseCSV,parseTime,parseLog,parsePositions,positionFrames,initialPositions,activeIndex,cloudURL} from '../data.js';
-const logText=await readFile(new URL('../samples/game.csv',import.meta.url),'utf8');
-const positionText=await readFile(new URL('../samples/positions.csv',import.meta.url),'utf8');
+const logText=`throw,timestamp,player,pins,score,total,note
+1,00:05,A,7,7,7,狙う
+2,00:10,B,10;11;12,3,3,
+3,00:15,A,9,9,16,
+4,00:20,B,1;2,2,5,
+5,00:25,A,,0,16,ミス
+6,00:30,B,12,12,17,`;
+const positionText=`throw,pin,x,y
+1,7,-80,-125
+2,12,85,-15
+6,12,130,40`;
+const loggerText=`timestamp,game,goal_score,turn,team,player,pins,throw_score,score_before,score_after,consecutive_misses,over_goal,win,disqualified
+2026/09/28 15:18:07,fixture,30,1,A,P1,,0,0,0,1,FALSE,FALSE,FALSE
+2026/09/28 15:19:30,fixture,30,2,B,P2,"2,5,6,7,9",5,0,5,0,FALSE,FALSE,FALSE
+2026/09/28 15:20:05,fixture,30,8,A,P1,12,12,15,27,0,FALSE,FALSE,FALSE
+2026/09/28 15:20:31,fixture,30,9,A,P1,3,3,27,30,0,FALSE,TRUE,FALSE
+2026/09/28 15:21:00,fixture,30,10,B,P2,,0,5,5,1,FALSE,FALSE,FALSE`;
 const logs=parseLog(logText);
 test('CSV: BOM, CRLF, quotes, commas and embedded newlines',()=>{assert.deepEqual(parseCSV('\uFEFFa,b\r\n"a,b","one\n""two"""\r\n'),[{a:'a,b',b:'one\n"two"'}]);});
 test('CSV: reject broken quotes, inconsistent rows and duplicate headers',()=>{for(const input of ['a,b\n"hi,x','a,b\n1','a,a\n1,2'])assert.throws(()=>parseCSV(input));});
@@ -26,17 +40,16 @@ test('positions accumulate; before states are immutable; fallback stays at initi
 test('position CSV rejects unknown throw IDs, empty coordinates and duplicate pins',()=>{for(const text of ['throw,pin,x,y\nunknown,1,0,0','throw,pin,x,y\n1,1,,0','throw,pin,x,y\n1,1,0,0\n1,1,1,1','throw,pin,x,y\n1,13,0,0'])assert.throws(()=>parsePositions(text,logs));});
 test('Google Sheets URL maps document ID and selected sheet; direct URLs preserved',()=>{assert.equal(cloudURL('https://docs.google.com/spreadsheets/d/abc-123/edit#gid=42','log'),'https://docs.google.com/spreadsheets/d/abc-123/export?format=csv&gid=42');assert.equal(cloudURL('https://example.com/a.csv','log'),'https://example.com/a.csv');for(const s of ['javascript:alert(1)','file:///tmp/a','https://user:pass@example.com','not-url'])assert.throws(()=>cloudURL(s,'log'));});
 
-test('real September 28 log loads all 35 throws and preserves game/team/results',async()=>{
-  const rows=parseLog(await readFile(new URL('../samples/20260928_1.csv',import.meta.url),'utf8'));
-  assert.equal(rows.length,35);
+test('logger-format fixture preserves game, team, player, totals and results without samples',()=>{
+  const rows=parseLog(loggerText);
+  assert.equal(rows.length,5);
   assert.equal(rows[0].time,Date.parse('2026-09-28T15:18:07+09:00')/1000);
-  assert.equal(rows.at(-1).time-rows[0].time,1296);
-  assert.equal(rows[0].game,'20260928game1');assert.equal(rows[0].goalScore,'30');
-  assert.equal(rows[1].team,'チョキ');assert.equal(rows[1].player,'カイマ');
+  assert.equal(rows[0].game,'fixture');assert.equal(rows[0].goalScore,'30');
+  assert.equal(rows[1].team,'B');assert.equal(rows[1].player,'P2');
   assert.deepEqual(rows[1].pins,[2,5,6,7,9]);assert.equal(rows[1].score,5);
-  assert.equal(rows[24].scoreBefore,'15');assert.equal(rows[24].total,'27');
-  assert.equal(rows.at(-1).id,'35');assert.equal(rows.at(-1).total,'30');
-  assert.equal(rows.at(-1).win,true);assert.equal(rows[0].win,false);
+  assert.equal(rows[2].scoreBefore,'15');assert.equal(rows[2].total,'27');
+  assert.equal(rows[3].id,'9');assert.equal(rows[3].total,'30');
+  assert.equal(rows[3].win,true);assert.equal(rows[0].win,false);
   assert.equal(rows[0].disqualified,false);assert.equal(rows[0].overGoal,false);
   assert.equal(rows[0].consecutiveMisses,'1');assert.equal(rows[0].note,'');
   assert.equal(activeIndex(rows,83,-rows[0].time),2);
@@ -55,15 +68,15 @@ test('logger wall-clock parsing is deterministic JST and rejects calendar rollov
 
 test('sync uses the highlighted row and current frame, and aligns later throws',async()=>{
   const {syncHighlighted}=await import('../data.js');
-  const rows=parseLog(await readFile(new URL('../samples/20260928_1.csv',import.meta.url),'utf8'));
+  const rows=parseLog(loggerText);
   const frameTime=100.5;
   const {log,offset}=syncHighlighted(rows,2,frameTime);
-  assert.equal(log.id,'3');
+  assert.equal(log.id,'8');
   assert.equal(log.time+offset,frameTime);
   assert.equal(activeIndex(rows,frameTime,offset),3);
   assert.equal(rows[3].time+offset,126.5);
   assert.equal(activeIndex(rows,126.5,offset),4);
-  assert.equal(syncHighlighted(rows,3,frameTime).log.id,'4');
+  assert.equal(syncHighlighted(rows,3,frameTime).log.id,'9');
   for(const i of [-1,-2,rows.length,0.5])assert.throws(()=>syncHighlighted(rows,i,frameTime));
   for(const t of [NaN,Infinity,-1])assert.throws(()=>syncHighlighted(rows,0,t));
 });

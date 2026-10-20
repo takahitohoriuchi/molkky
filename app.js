@@ -1,6 +1,6 @@
-import {followLogRow} from './log-scroll.js?v=20261020-5';
-import {beginSync,playbackIndex,selectRow,finishSync} from './review-state.js?v=20261020-5';
-import {parseLog,parsePositions,positionFrames,cloudURL,clock,initialPositions} from './data.js?v=20261020-5';
+import {followLogRow} from './log-scroll.js?v=20261020-6';
+import {beginSync,playbackIndex,selectRow,finishSync} from './review-state.js?v=20261020-6';
+import {parseLog,parsePositions,positionFrames,cloudURL,clock,initialPositions} from './data.js?v=20261020-6';
 const $=id=>document.getElementById(id);
 const state={files:{},logs:[],frames:[],index:-2,offset:0,baseOffset:0,urls:[],scale:1,tx:220,ty:200,hasPositions:false,loading:false,syncMode:false};
 const video=$('video');
@@ -17,7 +17,11 @@ for(const key of ['video','log','positions']){
 }
 async function fetchText(url){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),20000);try{const r=await fetch(url,{signal:controller.signal});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.text();}catch(e){throw new Error(`データを取得できませんでした（${e.name==='AbortError'?'タイムアウト':e.message}）。URL・公開設定・配信元のCORS許可を確認するか、CSVをダウンロードして読み込んでください。`);}finally{clearTimeout(timer);}}
 async function sourceText(key){if(state.files[key])return state.files[key].text();const value=$(`url-${key}`).value.trim();return value?fetchText(cloudURL(value,key)):null;}
-function busy(value){state.loading=value;$('load-submit').disabled=value;$('demo').disabled=value;$('real-sample').disabled=value;$('load-submit').textContent=value?'読み込み中…':'鑑賞をはじめる →';}
+function busy(value){
+  state.loading=value;
+  for(const id of ['load-submit','demo','real-sample']){const button=$(id);if(button)button.disabled=value;}
+  $('load-submit').textContent=value?'読み込み中…':'鑑賞をはじめる →';
+}
 $('load-form').addEventListener('submit',async e=>{e.preventDefault();if(state.loading)return;busy(true);$('load-error').textContent='';try{
   if(!state.files.video&&!$('url-video').value.trim())throw new Error('動画ファイルまたは動画の直接URLを指定してください。');
   const texts=await Promise.all([sourceText('log'),sourceText('positions')]);if(!texts[0])throw new Error('ゲームログのCSVまたはURLを指定してください。');
@@ -25,8 +29,8 @@ $('load-form').addEventListener('submit',async e=>{e.preventDefault();if(state.l
   const src=state.files.video?URL.createObjectURL(state.files.video):cloudURL($('url-video').value.trim(),'video');
   openReview(logs,positions,src,state.files.video?.name||'クラウドの動画',false,!!texts[1]);
 }catch(e){$('load-error').textContent=e.message;}finally{busy(false);}});
-$('demo').addEventListener('click',async()=>{if(state.loading)return;busy(true);$('load-error').textContent='';try{const [a,b]=await Promise.all([fetchText('samples/game.csv'),fetchText('samples/positions.csv')]);const logs=parseLog(a);openReview(logs,parsePositions(b,logs),'samples/demo.mp4','サンプル映像 / 30秒',true,true);}catch(e){$('load-error').textContent=e.message;}finally{busy(false);}});
-$('real-sample').addEventListener('click',async()=>{
+$('demo')?.addEventListener('click',async()=>{if(state.loading)return;busy(true);$('load-error').textContent='';try{const [a,b]=await Promise.all([fetchText('samples/game.csv'),fetchText('samples/positions.csv')]);const logs=parseLog(a);openReview(logs,parsePositions(b,logs),'samples/demo.mp4','サンプル映像 / 30秒',true,true);}catch(e){$('load-error').textContent=e.message;}finally{busy(false);}});
+$('real-sample')?.addEventListener('click',async()=>{
   if(state.loading)return;busy(true);$('load-error').textContent='';
   try{const logs=parseLog(await fetchText('samples/20260928_1.csv'));openReview(logs,new Map(),'samples/G1_ALL.mp4','G1_ALL.mp4 / 2026年9月28日',false,false);}
   catch(e){$('load-error').textContent=e.message;}finally{busy(false);}
